@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rusty Snake WASM</title>
+    <link type="text/css" href="style.css">
+    <style>
+        .content-wrapper {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <p>Here is a snake game written in Rust and compiled to WASM</p>
+    <p>We need to compile Rust to WASM. WASM runs at native speed and can be run in browser!</p>
+    <div class="content-wrapper">
+        <canvas id="snake-canvas"></canvas>
+    </div>
+    <script src="bootstrap.js"></script>
+</body>
+</html>
+
