@@ -1,18 +1,27 @@
 import init, {Direction, World} from "snake_game";
 
-init().then(_ => {
+init().then(wasm => {
     const CELL_SIZE = 50;
     const WORLD_WIDTH = 8;
     const SIZE = WORLD_WIDTH * WORLD_WIDTH;
     const SNAKE_SPAWN_IDX = Date.now() % SIZE;
 
-
     const world = World.new(WORLD_WIDTH, SNAKE_SPAWN_IDX, 3);
     const worldWidth = world.width();
+    const snakeCellPtr = world.snake_cells();
+    const snakeLen = world.snake_length();
+
     const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
     const ctx = canvas.getContext("2d");
     canvas.height = worldWidth * CELL_SIZE;
     canvas.width = worldWidth * CELL_SIZE;
+
+
+    const snakeCells = new Uint32Array(
+        wasm.memory.buffer,
+        snakeCellPtr,
+        snakeLen
+    )
 
     document.addEventListener("keydown", (e) => {
         switch (e.code) {
@@ -48,17 +57,27 @@ init().then(_ => {
     }
 
     function drawSnake() {
-        const snakeIdx = world.snake_head_idx();
-        const col = snakeIdx %  worldWidth;
-        const row = Math.floor(snakeIdx / worldWidth);
+        const snakeCells = new Uint32Array(
+            wasm.memory.buffer,
+            world.snake_cells(),
+            world.snake_length()
+        )
 
-        ctx.beginPath();
-        ctx.fillRect(
-            col * CELL_SIZE,
-            row * CELL_SIZE,
-            CELL_SIZE,
-            CELL_SIZE
-        );
+        snakeCells.forEach((cellIdx, i) => {
+            const col = cellIdx %  worldWidth;
+            const row = Math.floor(cellIdx / worldWidth);
+
+            ctx.fillStyle = i === 0 ? "#b91400" : "#000000";
+
+            ctx.beginPath();
+            ctx.fillRect(
+                col * CELL_SIZE,
+                row * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+        })
+
         ctx.stroke();
     }
 
@@ -71,7 +90,7 @@ init().then(_ => {
         const fps = 3;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            world.update();
+            world.step();
             paint();
             requestAnimationFrame(update);
         }, 1000 / fps)
