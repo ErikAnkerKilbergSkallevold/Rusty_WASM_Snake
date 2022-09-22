@@ -1,8 +1,9 @@
-import init, {Direction, World} from "snake_game";
+import init, {Direction, GameStatus, World} from "snake_game";
 import { rand } from "./utils/rand";
+import {stat} from "copy-webpack-plugin/types/utils";
 
 init().then(wasm => {
-    const CELL_SIZE = 50;
+    const CELL_SIZE = 20;
     const WORLD_WIDTH = 8;
     const SIZE = WORLD_WIDTH * WORLD_WIDTH;
     const SNAKE_SPAWN_IDX = rand(SIZE);
@@ -12,10 +13,25 @@ init().then(wasm => {
     const snakeCellPtr = world.snake_cells();
     const snakeLen = world.snake_length();
 
+    const gameStatus = document.getElementById("game-status");
+    const points = document.getElementById("points");
+    const gameControlBtn = document.getElementById("game-control-btn");
+
     const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
     const ctx = canvas.getContext("2d");
     canvas.height = worldWidth * CELL_SIZE;
     canvas.width = worldWidth * CELL_SIZE;
+
+    gameControlBtn.addEventListener("click", _ => {
+        const gameStatus = world.game_status();
+        if(gameStatus === undefined) {
+            gameControlBtn.textContent = "Playing...";
+            world.start_game();
+            play();
+        } else {
+            location.reload();
+        }
+    })
 
 
     const snakeCells = new Uint32Array(
@@ -80,11 +96,16 @@ init().then(wasm => {
             world.snake_length()
         )
 
-        snakeCells.forEach((cellIdx, i) => {
+
+
+        snakeCells
+            .filter((cellIdx, i) => !(i > 0 && cellIdx === snakeCells[0]))
+            .forEach((cellIdx, i) => {
             const col = cellIdx %  worldWidth;
             const row = Math.floor(cellIdx / worldWidth);
 
-            ctx.fillStyle = i === 0 ? "#b91400" : "#000000";
+            ctx.fillStyle = i === 0 ? "#b91400" : "#e91400";
+            ctx.strokeStyle = "black";
 
             ctx.beginPath();
             ctx.fillRect(
@@ -93,27 +114,44 @@ init().then(wasm => {
                 CELL_SIZE,
                 CELL_SIZE
             );
+            ctx.strokeRect(
+                col * CELL_SIZE,
+                row * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE
+            )
         })
 
         ctx.stroke();
+    }
+
+    function drawGameStatus() {
+        const status = world.game_status();
+        gameStatus.textContent = world.game_status_text();
+        points.textContent = world.points().toString();
+
+        if (status ===  GameStatus.Lost || GameStatus.Won) {
+            gameControlBtn.textContent = "Replay";
+            return;
+        }
     }
 
     function paint() {
         drawWorld();
         drawSnake();
         drawReward();
+        drawGameStatus();
     }
 
-    function update() {
-        const fps = 3;
+    function play() {
+        const fps = 4;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             world.step();
             paint();
-            requestAnimationFrame(update);
+            requestAnimationFrame(play);
         }, 1000 / fps)
     }
 
     paint();
-    update();
 })

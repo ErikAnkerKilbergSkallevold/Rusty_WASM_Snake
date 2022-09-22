@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Rusty Snake WASM</title>
-    <link type="text/css" href="style.css">
+    <link type="text/css" href="dist/output.css">
     <style>
         .content-wrapper {
             top: 0;
@@ -16,6 +16,19 @@
             justify-content: center;
             flex-direction: column;
         }
+
+        .game-panel {
+            margin-bottom: 20px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -23,6 +36,25 @@
     <p>Here is a snake game written in Rust and compiled to WASM</p>
     <p>We need to compile Rust to WASM. WASM runs at native speed and can be run in browser!</p>
     <div class="content-wrapper">
+        <div class="game-panel">
+            <div class="flex">
+                <div class="label">
+                    Status:
+                </div>
+                <div id="game-status"></div>
+            </div>
+            <div class="flex">
+                <div class="label">
+                    Points:
+                </div>
+                <div id="points"></div>
+            </div>
+            <div class="flex">
+                <button id="game-control-btn">
+                    <label>Play</label>
+                </button>
+            </div>
+        </div>
         <canvas id="snake-canvas"></canvas>
     </div>
     <script src="bootstrap.js"></script>
