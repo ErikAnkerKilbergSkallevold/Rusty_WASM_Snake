@@ -45,7 +45,7 @@ impl Snake {
 
         Snake {
             body,
-            direction: Direction::Up,
+            direction: Direction::Right,
         }
     }
 }

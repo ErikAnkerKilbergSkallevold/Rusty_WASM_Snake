@@ -3,7 +3,7 @@ import { rand } from "./utils/rand";
 import {stat} from "copy-webpack-plugin/types/utils";
 
 init().then(wasm => {
-    const CELL_SIZE = 20;
+    const CELL_SIZE = 50;
     const WORLD_WIDTH = 8;
     const SIZE = WORLD_WIDTH * WORLD_WIDTH;
     const SNAKE_SPAWN_IDX = rand(SIZE);
@@ -126,14 +126,8 @@ init().then(wasm => {
     }
 
     function drawGameStatus() {
-        const status = world.game_status();
         gameStatus.textContent = world.game_status_text();
         points.textContent = world.points().toString();
-
-        if (status ===  GameStatus.Lost || GameStatus.Won) {
-            gameControlBtn.textContent = "Replay";
-            return;
-        }
     }
 
     function paint() {
@@ -144,7 +138,13 @@ init().then(wasm => {
     }
 
     function play() {
-        const fps = 4;
+        const status = world.game_status();
+        if (status ===  GameStatus.Lost || GameStatus.Won) {
+            gameControlBtn.textContent = "Replay";
+            return;
+        }
+
+        const fps = 3;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             world.step();

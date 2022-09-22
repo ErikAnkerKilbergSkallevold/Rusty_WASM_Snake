@@ -16,6 +16,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "postcss": "^8.4.16",
     "snake_game": "file:../pkg",
+    "snake_game_server": "file:..",
     "tailwindcss": "^3.1.8",
     "ts-loader": "^9.4.0",
     "typescript": "^4.8.3",
